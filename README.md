@@ -16,7 +16,7 @@ cd rspec_book
 # 01-getting-started/01/spec/sandwich_spec.rb
 defmodule RspecBook.SandwichTest do
   use ExUnit.Case
-  doctest RspecBook.Sandwith
+  doctest RspecBook.Sandwich
   alias RspecBook.Sandwich
 
   describe "an ideal sandwich" do
@@ -28,7 +28,7 @@ end
 # 01-getting-started/02/spec/sandwich_spec.rb
 defmodule RspecBook.SandwichTest do
   use ExUnit.Case
-  doctest RspecBook.Sandwith
+  doctest RspecBook.Sandwich
   alias RspecBook.Sandwich
 
   describe "an ideal sandwich" do
@@ -139,8 +139,12 @@ end
 defmodule RspecBook.Coffee do
   defstruct ingredients: []
 
-  def add(coffee, ingredient)
+  def add(coffee, ingredient) do
     Map.put(coffee, :ingredients, [ingredient | coffee.ingredients])
+  end
+
+  def price(coffee) do
+    1.00
   end
 end
 ```
@@ -210,11 +214,11 @@ mix test --failed
 defmodule RspecBook.Coffee do
   defstruct ingredients: []
 
-  def add(coffee, ingredient)
+  def add(coffee, ingredient) do
     Map.put(coffee, :ingredients, [ingredient | coffee.ingredients])
   end
 
-  def price(coffee)
+  def price(coffee) do
     1.00 + length(coffee.ingredients) * 0.25
   end
 end
@@ -231,7 +235,7 @@ end
 #### Tag Filtering
 
 ```
-mix test --include wip
+mix test --only wip
 ```
 
 ### Marking Work in Progress

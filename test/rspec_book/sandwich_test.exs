@@ -1,6 +1,6 @@
 defmodule RspecBook.SandwichTest do
   use ExUnit.Case
-  doctest RspecBook.Sandwith
+  doctest RspecBook.Sandwich
   alias RspecBook.Sandwich
 
   describe "an ideal sandwich" do
