@@ -238,6 +238,8 @@ end
 mix test --only wip
 ```
 
+## Chapter 4
+
 ### Marking Work in Progress
 
 #### Starting With the Description
@@ -300,3 +302,192 @@ defmodule RspecBook.TeaTest do
   end
 end
 ```
+
+
+## Starting On Outside: Acceptance Specs
+
+### First Step
+
+#### The Project: An Expense Tracker
+
+no code
+
+#### Getting Started
+
+```shell
+mix archive.install hex phx_new 1.5.4
+mix expense_tracker --no-html --no-ecto --no-webpack --no-gettext --no-dashboard
+cd expense_tracker
+cat mix.exs
+```
+
+```elixir
+...
+defp deps do
+  [
+    {:phoenix, "~> 1.5.4"},
+    {:telemetry_metrics, "~> 0.4"},
+    {:telemetry_poller, "~> 0.4"},
+    {:jason, "~> 1.0"},
+    {:plug_cowboy, "~> 2.0"}
+  ]
+end
+```
+
+```shell
+mix deps.get
+```
+
+#### Deciding What to Test First
+
+```elixir
+# test/expense_tracker_web/acceptance/expenses_test.exs
+defmodule ExpenseTracker.ExpensesTest do
+  use ExpenseTrackerWeb.ConnCase
+
+  @coffee %{
+    payee: "Staarbucks",
+    amount: 5.75,
+    date: "2020-07-28"
+  }
+
+  test "it records submitted expenses", %{conn: conn} do
+    post conn, "/expenses", @coffee
+  end
+end
+```
+
+#### Checking Response
+
+```elixir
+# test/expense_tracker_web/acceptance/expenses_test.exs
+# ...
+conn = post conn, "/expenses", @coffee
+assert json_response(conn, 200)
+```
+
+```elixir
+# lib/expense_tracker_web/router.ex
+# ...
+scope "/", ExpenseTrackerWeb do
+  pipe_through(:api)
+  post("/expenses", ExpensesController, :create)
+end
+```
+
+```elixir
+# lib/expense_tracker_web/controllers/expenses_controller.ex
+defmodule ExpenseTrackerWeb.ExpensesController do
+  use ExpenseTrackerWeb, :controller
+
+  def create(conn, _params) do
+    json(conn, %{})
+  end
+end
+```
+
+#### Filing In the Response Body
+
+```elixir
+# lib/expense_tracker_web/controllers/expenses_controller.ex
+# ...
+json(conn, %{expense_id: 42})
+```
+
+```elixir
+# test/expense_tracker_web/acceptance/expenses_test.exs
+# ...
+assert json = json_response(conn, 200)
+assert is_integer(json["expense_id"])
+```
+
+```elixir
+# lib/expense_tracker_web/controllers/expenses_controller.ex
+defmodule ExpenseTrackerWeb.ExpensesController do
+  use ExpenseTrackerWeb, :controller
+
+  def create(conn, _params) do
+    json(conn, %{expense_id: 42})
+  end
+end
+```
+
+#### Quering the Data
+
+```elixir
+# test/expense_tracker_web/acceptance/expenses_test.exs
+# ...
+defp post_expense(conn, params) do
+  conn = post conn, "/expenses", params
+  assert json = json_response(conn, 200)
+  assert is_integer(json["expense_id"])
+  Map.put(params, "expense_id", json["expense_id"])
+end
+```
+
+```elixir
+# test/expense_tracker_web/acceptance/expenses_test.exs
+# ...
+@coffee %{"payee" => "Starbucks", "amount" => 5.75, "date" => "2020-07-28"}
+# ...
+coffee = post_expense(conn, @coffee)
+```
+
+```elixir
+# test/expense_tracker_web/acceptance/expenses_test.exs
+# ...
+@zoo %{"payee" => "Zoo", "amount" => 15.25, "date" => "2020-07-28"}
+@groceries %{"payee" => "Whole Foods", "amount" => 95.2, "date" => "2020-07-29"}
+# ...
+zoo = post_expense(conn, @zoo)
+groceries = post_expense(conn, @groceries)
+```
+
+```elixir
+# test/expense_tracker_web/acceptance/expenses_test.exs
+# ...
+test "it records submitted expenses", %{conn: conn} do
+  coffee = post_expense(conn, @coffee)
+  zoo = post_expense(conn, @zoo)
+  _groceries = post_expense(conn, @groceries)
+  conn = get conn, "/expenses/2020-07-28"
+  assert json = json_response(conn, 200)
+  assert json == [coffee, zoo]
+end
+```
+
+```elixir
+# lib/expense_tracker_web/router.ex
+# ...
+scope "/", ExpenseTrackerWeb do
+  pipe_through(:api)
+  post("/expenses", ExpensesController, :create)
+  get("/expenses/:date", ExpensesController, :index)
+end
+```
+
+```elixir
+# lib/expense_tracker_web/controllers/expenses_controller.ex
+# ...
+def index(conn, _params) do
+  json(conn, [])
+end
+```
+
+### Saving Your Progress: Pending Spec
+
+```elixir
+# test/expense_tracker_web/acceptance/expenses_test.exs
+# ...
+@tag skip: true
+test "it records submitted expenses", %{conn: conn} do
+```
+
+```shell
+iex -S mix phx.server
+curl localhost:4000/expenses/2020-07-28 -w "\n"
+```
+
+### Your Turn
+
+no code
