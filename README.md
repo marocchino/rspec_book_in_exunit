@@ -238,6 +238,14 @@ end
 mix test --only wip
 ```
 
+## Chapter 3
+
+no code
+
+[japanese text](https://vega-c.slack.com/archives/CFLJTG8ET/p1594958150041800?thread_ts=1593674087.204200&cid=CFLJTG8ET)
+
+note: It is not published without permission of the copyright holder.
+
 ## Chapter 4
 
 ### Marking Work in Progress
