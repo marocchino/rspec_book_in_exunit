@@ -321,7 +321,7 @@ no code
 
 ```shell
 mix archive.install hex phx_new 1.5.4
-mix expense_tracker --no-html --no-ecto --no-webpack --no-gettext --no-dashboard
+mix phx.new expense_tracker --no-html --no-ecto --no-webpack --no-gettext --no-dashboard
 cd expense_tracker
 cat mix.exs
 ```
@@ -392,12 +392,6 @@ end
 ```
 
 #### Filing In the Response Body
-
-```elixir
-# lib/expense_tracker_web/controllers/expenses_controller.ex
-# ...
-json(conn, %{expense_id: 42})
-```
 
 ```elixir
 # test/expense_tracker_web/acceptance/expenses_test.exs
