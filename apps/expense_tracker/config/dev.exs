@@ -13,6 +13,16 @@ config :expense_tracker, ExpenseTrackerWeb.Endpoint,
   check_origin: false,
   watchers: []
 
+# Configure Your database
+config :expense_tracker, ExpenseTracker.Repo,
+  username: System.get_env("DATABASE_USERNAME", "postgres"),
+  password: System.get_env("DATABASE_PASSWORD", "postgres"),
+  database: "expense_tracker_dev",
+  hostname: "localhost",
+  show_sensitive_data_on_connection_error: true,
+  pool_size: 10
+
+
 # ## SSL Support
 #
 # In order to use HTTPS in development, a self-signed

@@ -28,7 +28,11 @@ defmodule ExpenseTrackerWeb.ChannelCase do
     end
   end
 
-  setup _tags do
-    :ok
+  setup tags do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(ExpenseTracker.Repo)
+
+    unless tags[:async] do
+      Ecto.Adapters.SQL.Sandbox.mode(ExpenseTracker.Repo, {:shared, self()})
+    end
   end
 end

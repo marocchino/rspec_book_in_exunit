@@ -7,6 +7,8 @@ defmodule ExpenseTracker.Application do
 
   def start(_type, _args) do
     children = [
+      # Start the Ecto repository
+      ExpenseTracker.Repo,
       # Start the Telemetry supervisor
       ExpenseTrackerWeb.Telemetry,
       # Start the PubSub system

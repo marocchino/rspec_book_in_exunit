@@ -8,3 +8,10 @@ config :expense_tracker, ExpenseTrackerWeb.Endpoint,
 
 # Print only warnings and errors during test
 config :logger, level: :warn
+
+config :expense_tracker, ExpenseTracker.Repo,
+  username: "postgres",
+  password: "postgres",
+  database: "expense_tracker_test#{System.get_env("MIX_TEST_PARTITION")}",
+  hostname: "localhost",
+  pool: Ecto.Adapters.SQL.Sandbox

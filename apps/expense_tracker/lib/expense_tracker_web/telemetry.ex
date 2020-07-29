@@ -30,6 +30,13 @@ defmodule ExpenseTrackerWeb.Telemetry do
         unit: {:native, :millisecond}
       ),
 
+      # Database Metrics
+      summary("expense_trcker.repo.query.total_time", unit: {:native, :millisecond}),
+      summary("expense_trcker.repo.query.decode_time", unit: {:native, :millisecond}),
+      summary("expense_trcker.repo.query.query_time", unit: {:native, :millisecond}),
+      summary("expense_trcker.repo.query.queue_time", unit: {:native, :millisecond}),
+      summary("expense_trcker.repo.query.idle_time", unit: {:native, :millisecond}),
+
       # VM Metrics
       summary("vm.memory.total", unit: {:byte, :kilobyte}),
       summary("vm.total_run_queue_lengths.total"),

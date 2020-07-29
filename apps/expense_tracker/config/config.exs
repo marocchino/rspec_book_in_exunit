@@ -7,6 +7,8 @@
 # General application configuration
 use Mix.Config
 
+config :expense_tracker, ecto_repos: [ExpenseTracker.Repo]
+
 # Configures the endpoint
 config :expense_tracker, ExpenseTrackerWeb.Endpoint,
   url: [host: "localhost"],
