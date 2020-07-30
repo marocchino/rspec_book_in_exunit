@@ -40,7 +40,8 @@ defmodule ExpenseTracker.MixProject do
       {:phoenix_ecto, "~> 4.1"},
       {:ecto_sql, "~> 3.4"},
       {:postgrex, ">= 0.0.0"},
-      {:plug_cowboy, "~> 2.0"}
+      {:plug_cowboy, "~> 2.0"},
+      {:hammox, "~> 0.2", only: :test}
     ]
   end
 

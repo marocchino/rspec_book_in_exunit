@@ -15,3 +15,7 @@ config :expense_tracker, ExpenseTracker.Repo,
   database: "expense_tracker_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
+
+config :expense_tracker, :behaviour,
+  recording: RecordingMock
+
