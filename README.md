@@ -77,6 +77,7 @@ end
 ```
 
 ### Hooks
+
 ```elixir
 # 01-getting-started/05/spec/sandwich_spec.rb
 describe "an ideal sandwich" do
@@ -490,3 +491,201 @@ curl localhost:4000/expenses/2020-07-28 -w "\n"
 ### Your Turn
 
 no code
+
+## Chapter 5
+
+### From Acceptance spec to unit spec
+
+#### A Better Testing Experience
+
+no trans
+
+#### Sketching the Behavior
+
+```elixir
+# test/expense_tracker_web/controllers/expenses_controller_test.exs
+defmodule ExpenseTrackerWeb.ExpensesControllerTest do
+  use ExpenseTrackerWeb.ConnCase
+
+  describe ".create/2" do
+    test "it returns id when successfully recorded"
+    test "it responds with a 200 (OK) when successfully recorded"
+
+    # ... next content go here ...
+  end
+end
+```
+
+```elixir
+# test/expense_tracker_web/controllers/expenses_controller_test.exs
+# ...
+test "it returns an error message when the expense fails validation"
+test "it responds with a 422 (Unprocessable entity) when the expense fails validation"
+```
+
+### Filling In the First Spec
+
+#### Connecting to Storage
+
+see [diff](https://github.com/marocchino/rspec_book_in_exunit/commit/5718b0ba02961b3dd4c3835da9c5977e06e8ed61)
+
+```elixir
+case ExpenseTracker.Repo.insert(%Ledger{some: "data"}) do
+  {:ok, struct} -> struct.id
+  {:error, changeset} -> changeset.errors
+end
+```
+
+#### Test Doubles: Mocks, Stubs, and Others
+
+```elixir
+# mix.exs
+defp deps do
+  [
+    ...
+    {:hammox, "~> 0.2", only: :test}
+  ]
+end
+```
+
+```elixir
+# lib/expense_tracker/recording/behaviour.ex
+defmodule ExpenseTracker.Recording.Behaviour do
+  @callback record(map) :: {:ok, map} | {:error, any}
+end
+```
+
+```elixir
+# config/test.ex
+# ...
+config :expense_tracker, :behaviour,
+  recording: RecordingMock
+```
+
+```elixir
+# test/expense_tracker_web/controllers/expenses_controller_test.exs
+defmodule ExpenseTrackerWeb.ExpensesControllerTest do
+  use ExpenseTrackerWeb.ConnCase
+  import Mox
+  alias ExpenseTracker.Recording
+
+  describe ".create/2" do
+    @expense %{"some" => "data"}
+    defmock(RecordingMock, for: Recording.Behaviour)
+    setup do
+      expect(RecordingMock, :record, fn @expense ->
+        {:ok, %{id: 417}}
+      end)
+      :ok
+    end
+
+    test "it returns id and responds with a 200 (OK) when successfully recorded", %{conn: conn} do
+      conn = post conn, "/expenses", @expense
+      assert json = json_response(conn, 200)
+      assert 417 == json["expense_id"]
+    end
+
+    # ...
+  end
+end
+```
+
+### Handling Success
+
+```elixir
+# lib/expense_tracker_web/controllers/expenses_controller.ex
+# ...
+def create(conn, params) do
+  case recording().record(params) do
+    {:ok, %{id: id}} -> json(conn, %{expense_id: id})
+    _else -> raise "fail pass not implemented yet"
+  end
+end
+
+defp recording, do: Application.get_env(:expense_tracker, :behaviour)[:recording]
+```
+
+```elixir
+  alias Plug.Conn
+
+  Conn.put_status(conn, :unprocessable_entity)
+  |> json(%{expense_id: id})
+```
+
+### Refactoring
+
+```elixir
+@expense %{"some" => "data"}
+defmock(RecordingMock, for: Recording.Behaviour)
+setup do
+  expect(RecordingMock, :record, fn @expense ->
+    {:ok, %{id: 417}}
+  end)
+  :ok
+end
+
+test "it returns id and responds with a 200 (OK) when successfully recorded", %{conn: conn} do
+  conn = post conn, "/expenses", @expense
+  assert json = json_response(conn, 200)
+  assert 417 == json["expense_id"]
+end
+```
+
+### Handling Failure
+
+
+```elixir
+@expense %{"some" => "data"}
+@invalid_expense %{"some" => "invalid"}
+defmock(RecordingMock, for: Recording.Behaviour)
+setup do
+  expect(RecordingMock, :record, fn
+    @expense -> {:ok, %{id: 417}}
+    @invalid_expense -> {:error, %{error: "expense incomplete"}}
+  end)
+  :ok
+end
+```
+
+```elixir
+test "it returns an error message and responds with a 422 (Unprocessable entity) when the expense fails validation", %{conn: conn} do
+  conn = post conn, "/expenses", @invalid_expense
+  assert json = json_response(conn, 422)
+  assert "expense incomplete" == json["error"]
+end
+```
+
+```elixir
+{:error, error} ->
+  Conn.put_status(conn, :unprocessable_entity)
+  |> json(error)
+```
+
+### Defining the Ledger
+
+```elixir
+defmodule ExpenseTracker.Recording do
+  @behaviour ExpenseTracker.Recording.Behaviour
+  def record(_), do: {:ok, %{}}
+end
+```
+
+### Your Turn
+
+#### Exercises
+
+##### Reducing duplication
+
+```elixir
+assert json = json_response(conn, 200)
+# assert json do something
+```
+
+##### Implementing the GET Routes
+
+```elixir
+describe ".index/2" do
+  test "it returns expense records as JSON and responds with a 200 (OK) when expenses exist on the given date"
+  test "it returns empty array as JSON and responds with a 200 (OK) when no expenses on the given date"
+end
+```
