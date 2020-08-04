@@ -13,8 +13,9 @@ defmodule ExpenseTrackerWeb.ExpensesController do
     end
   end
 
-  def index(conn, _params) do
-    json(conn, [])
+  def index(conn, params) do
+    {:ok, data} = recording().get_all(params)
+    json(conn, data)
   end
 
   defp recording, do: Application.get_env(:expense_tracker, :behaviour)[:recording]
