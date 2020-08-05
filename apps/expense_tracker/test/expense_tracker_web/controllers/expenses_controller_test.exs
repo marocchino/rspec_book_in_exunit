@@ -2,7 +2,12 @@ defmodule ExpenseTrackerWeb.ExpensesControllerTest do
   use ExpenseTrackerWeb.ConnCase
   import Mox
   alias ExpenseTracker.Recording
+
   defmock(RecordingMock, for: Recording.Behaviour)
+  setup %{conn: conn} do
+    conn = Plug.Conn.put_private(conn, :recording, RecordingMock)
+    {:ok, conn: conn}
+  end
 
   describe ".create/2" do
     @expense %{"some" => "data"}
@@ -12,7 +17,6 @@ defmodule ExpenseTrackerWeb.ExpensesControllerTest do
         @expense -> {:ok, %{id: 417}}
         @invalid_expense -> {:error, %{error: "expense incomplete"}}
       end)
-
       :ok
     end
 
@@ -38,7 +42,6 @@ defmodule ExpenseTrackerWeb.ExpensesControllerTest do
         @today -> {:ok, [%{id: 417}]}
         @tomorrow -> {:ok, []}
       end)
-
       :ok
     end
 

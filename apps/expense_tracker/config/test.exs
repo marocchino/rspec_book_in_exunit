@@ -16,6 +16,3 @@ config :expense_tracker, ExpenseTracker.Repo,
   hostname: "localhost",
   pool: Ecto.Adapters.SQL.Sandbox
 
-config :expense_tracker, :behaviour,
-  recording: RecordingMock
-

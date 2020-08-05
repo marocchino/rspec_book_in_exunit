@@ -1,9 +1,10 @@
 defmodule ExpenseTrackerWeb.ExpensesController do
   use ExpenseTrackerWeb, :controller
   alias Plug.Conn
+  alias ExpenseTracker.Recording
 
   def create(conn, params) do
-    case recording().record(params) do
+    case recording(conn).record(params) do
       {:ok, %{id: id}} ->
         json(conn, %{expense_id: id})
 
@@ -14,9 +15,9 @@ defmodule ExpenseTrackerWeb.ExpensesController do
   end
 
   def index(conn, params) do
-    {:ok, data} = recording().get_all(params)
+    {:ok, data} = recording(conn).get_all(params)
     json(conn, data)
   end
 
-  defp recording, do: Application.get_env(:expense_tracker, :behaviour)[:recording]
+  defp recording(conn), do: conn.private[:recording] || Recording
 end
