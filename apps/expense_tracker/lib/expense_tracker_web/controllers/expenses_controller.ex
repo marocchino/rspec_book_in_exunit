@@ -14,8 +14,8 @@ defmodule ExpenseTrackerWeb.ExpensesController do
     end
   end
 
-  def index(conn, params) do
-    {:ok, data} = recording(conn).get_all(params)
+  def index(conn, %{"date" => date}) do
+    {:ok, data} = recording(conn).expenses_on(date)
     json(conn, data)
   end
 

@@ -2,6 +2,7 @@ defmodule ExpenseTrackerWeb.ExpensesControllerTest do
   use ExpenseTrackerWeb.ConnCase
   import Mox
   alias ExpenseTracker.Recording
+  alias ExpenseTracker.Recording.Expense
 
   defmock(RecordingMock, for: Recording.Behaviour)
   setup %{conn: conn} do
@@ -14,7 +15,7 @@ defmodule ExpenseTrackerWeb.ExpensesControllerTest do
     @invalid_expense %{"some" => "invalid"}
     setup do
       expect(RecordingMock, :record, fn
-        @expense -> {:ok, %{id: 417}}
+        @expense -> {:ok, %Expense{id: 417}}
         @invalid_expense -> {:error, %{error: "expense incomplete"}}
       end)
       :ok
@@ -35,12 +36,10 @@ defmodule ExpenseTrackerWeb.ExpensesControllerTest do
   end
 
   describe ".index/2" do
-    @today %{"date" => "2020-08-04"}
-    @tomorrow %{"date" => "2020-08-05"}
     setup do
-      expect(RecordingMock, :get_all, fn
-        @today -> {:ok, [%{id: 417}]}
-        @tomorrow -> {:ok, []}
+      expect(RecordingMock, :expenses_on, fn
+        "2020-08-04" -> {:ok, [%Expense{id: 417}]}
+        "2020-08-05" -> {:ok, []}
       end)
       :ok
     end
