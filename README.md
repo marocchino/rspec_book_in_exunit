@@ -689,3 +689,172 @@ describe ".index/2" do
   test "it returns empty array as JSON and responds with a 200 (OK) when no expenses on the given date"
 end
 ```
+
+## Chapter 6
+
+### Hooking Up the database
+
+#### Getting to Know Sequel
+
+#### Creating a Database
+
+```sh
+mix ecto.gen.migrate create_expenses
+```
+
+```elixir
+defmodule ExpenseTracker.Repo.Migrations.CreateExpenses do
+  use Ecto.Migration
+
+  def change do
+    create table(:expenses) do
+      add :payee, :string
+      add :amount, :float
+      add :date, :date
+    end
+  end
+end
+```
+
+```sh
+$ mix ecto.create
+The database for ExpenseTracker.Repo has been created
+$ mix ecto.migrate
+
+08:14:36.965 [info]  == Running 20200810231027 ExpenseTracker.Repo.Migrations.CreateExp
+
+08:14:36.967 [info]  create table posts
+
+08:14:36.991 [info]  == Migrated 20200810231027 in 0.0s
+```
+
+### Testing Ledger Behaviour
+
+see `test/support/data_case.ex`
+
+```elixir
+defmodule ExpenseTracker.RecordingTest do
+  use ExpenseTrackerWeb.DataCase
+  alias ExpenseTracker.Recording
+  describe ".record/1" do
+    # ... contexts go here ...
+  end
+end
+```
+
+```elixir
+@expense %{
+  "payee" => "Starbucks",
+  "amount" => 5.75,
+  "date" => "2020-08-11"
+}
+test "successfully saves the expense in the DB with valid expense" do
+  assert {:ok, result} = Recording.record(@expense)
+  assert [%Expense{payee: "Starbucks", amount: 5.75, date: ~D[2020-08-11]} = result] == Repo.all(Expense)
+end
+```
+
+
+### Testing the Invalid Case
+
+```elixir
+@expense %{
+  "amount" => 5.75,
+  "date" => "2020-08-11"
+}
+test "rejects the expecse as invalid when the expense lacks a payee" do
+  assert {:error, changeset} = Recording.record(@expense)
+  assert %{payee: ["can't be blank"]} == errors_on(changeset)
+end
+```
+
+### Isolating Your Specs Using Database Translations
+
+see `test/support/data_case.ex`
+
+### Filling in the Behavior
+
+```elixir
+defmodule ExpenseTracker.Recording do
+  @behaviour ExpenseTracker.Recording.Behaviour
+  alias ExpenseTracker.Recording.Expense
+  alias ExpenseTracker.Repo
+
+  def record(expense) do
+    expense
+    |> Expense.changeset()
+    |> Repo.insert()
+  end
+end
+```
+
+```elixir
+defmodule ExpenseTracker.Recording.Expense do
+  use Ecto.Schema
+  alias Ecto.Changeset
+
+  @type t :: %__MODULE__{}
+
+  schema "expenses" do
+    field(:payee)
+    field(:amount, :float)
+    field(:date, :date)
+  end
+
+  @spec changeset(map) :: Changeset.t()
+  def changeset(params) do
+    Changeset.cast(%__MODULE__{}, params, [:payee, :amount, :date])
+    |> Changeset.validate_required([:payee, :amount, :date])
+  end
+end
+```
+
+### Quering Expenses
+
+```elixir
+describe ".expenses_on/1" do
+  @expense %{
+    "payee" => "Starbucks",
+    "amount" => 5.75,
+    "date" => "2020-08-11"
+  }
+  test "returns all expenses for the provided date" do
+    assert {:ok, result_1} = Recording.record(@expense)
+    assert {:ok, result_2} = Recording.record(@expense)
+    assert {:ok, result_3} = Recording.record(Map.put(@expense, "date", "2020-08-10"))
+    assert {:ok, [result_1, result_2]} == Recording.expenses_on("2020-08-11")
+  end
+
+  test "returns a blank list when there are no matching expenses" do
+    assert {:ok, []} == Recording.expenses_on("2020-08-11")
+  end
+end
+```
+
+```elixir
+def expenses_on(date) do
+  Expense
+  |> where(date: ^date)
+  |> Repo.all()
+  |> (fn data -> {:ok, data} end).()
+end
+```
+
+### Ensuring the Application Works for Real
+
+```sh
+iex -S mix phx.server
+curl localhost:4000/expenses/2020-08-11 -w "\n"
+```
+
+```sh
+mix ecto.create
+mix ecto.migrate
+```
+
+```sh
+curl localhost:4000/expenses --data '{"payee": "Zoo", "amount": 10, "date": "2020-08-11"}'
+curl localhost:4000/expenses --data '{"payee": "Starbucks", "amount": 7.5, "date": "2020-08-11"}'
+```
+
+### Your Turn
