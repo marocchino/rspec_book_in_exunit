@@ -965,3 +965,62 @@ see: https://blog.codeminer42.com/how-to-test-shared-behavior-in-elixir-3ea3ebb9
 
 ### Your Turn
 
+## Chapter 8
+
+### Defining Metadata
+
+#### Metadata Defined By RSpec
+
+```elixir
+defmodule RspecBook.MetadataTest do
+  use ExUnit.Case
+
+  test "is used by ExUnit for context", context do
+    IO.inspect(context)
+  end
+end
+```
+
+see: https://hexdocs.pm/ex_unit/ExUnit.Case.html#module-known-tags
+
+### Custom Metadata
+
+see: https://hexdocs.pm/ex_unit/ExUnit.Case.html#module-tags
+
+### Derived Metadata
+
+```sh
+mix test --only xxxx
+```
+
+### Default Metadata
+
+see: https://hexdocs.pm/ex_unit/ExUnit.Case.html#module-filters
+
+### Reading Metadata
+
+### Selecting Which Specs to Run
+
+#### Filtering
+
+```sh
+mix test --only xxxx
+```
+
+#### Excluding Examples
+
+see: https://hexdocs.pm/ex_unit/ExUnit.Case.html#module-filters
+
+#### Including Examples
+
+see: https://hexdocs.pm/ex_unit/ExUnit.Case.html#module-filters
+
+#### The Command Line
+
+### Sharing Code Conditionally
+
+### Changing How Your Specs Run
+
+### Your Turn
+
+
