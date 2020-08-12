@@ -858,3 +858,110 @@ curl localhost:4000/expenses --data '{"payee": "Starbucks", "amount": 7.5, "date
 ```
 
 ### Your Turn
+
+## Chapter 7
+
+### Getting Words Right
+
+#### The basic
+
+##### describe
+
+```elixir
+# by module name
+defmodule RspecBook.GardenTest do
+end
+
+defmodule RspecBookTest do
+end
+
+# by module name and use case
+defmodule RspecBook.GardenInWinterTest do
+end
+```
+
+#### Other Ways to Get the Words Right
+
+##### context Instead of describe
+
+see: https://elixirforum.com/t/how-to-describe-many-contexts-in-exunit-without-a-hierarchy/1551
+
+##### example Instead of it
+
+skip
+
+##### specify Instead of it
+
+skip
+
+#### Defining Your Own Names
+
+see: https://elixirforum.com/t/tagging-all-tests-that-use-a-particular-case/4351/2
+
+
+### Sharing Common Logic
+
+you can use hook and helper function
+
+```elixir
+defmodule RspecBook.GardenTest do
+
+  # hook
+  def setup(_) do
+    {:ok, user: build(:user)}
+  end
+
+  # helper method
+  def build(:user) do
+    %User{id: 1, username: "admin", password: "some-very-secure-password"}
+  end
+end
+```
+
+#### Hooks
+
+##### Type
+
+see: https://hexdocs.pm/ex_unit/ExUnit.Callbacks.html
+
+- before -> setup/1, setup_all/1
+- after -> on_exit/1
+- around -> x
+
+###### before and after
+
+###### around
+
+##### Config hooks
+
+see: https://hexdocs.pm/ex_unit/ExUnit.Case.html#module-tags
+
+##### Scope
+
+##### When to Use Hooks
+
+#### Helper Methods
+
+##### Putting Your Helper in a Module
+
+
+##### Include Modules Automatically
+
+Not Recommended!
+http://blog.lucidsimple.com/2016/01/31/exunit-cheat-sheet.html#load
+
+
+### Sharing Example Groups
+
+see: https://blog.codeminer42.com/how-to-test-shared-behavior-in-elixir-3ea3ebb92b64/
+
+#### Sharing Contexts
+
+#### Sharing Examples
+
+##### Nesting
+
+##### Customizing Sharing Groups With Blocks
+
+### Your Turn
+
