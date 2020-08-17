@@ -1023,4 +1023,68 @@ see: https://hexdocs.pm/ex_unit/ExUnit.Case.html#module-filters
 
 ### Your Turn
 
+## Chapter 9
+
+### Command-Line Configuration
+
+#### Environment Options
+
+https://hexdocs.pm/mix/Mix.Tasks.Test.html#module-configuration
+
+- def deps
+
+#### Filtering Options
+
+https://hexdocs.pm/mix/Mix.Tasks.Test.html#module-filters
+
+#### Output Options
+
+https://hexdocs.pm/mix/Mix.Tasks.Test.html#module-command-line-options
+
+### Setting Command-Line Defaults
+
+https://hexdocs.pm/ex_unit/1.10.4/ExUnit.html#configure/1-options
+
+### Using a Custom Formatter
+
+https://elixirforum.com/t/registering-a-custom-formatter-for-exunit/1472
+
+#### Setting Up the Formatter
+
+#### How Formatter Work
+
+##### Getting RSpec to Use the Formatter
+
+##### Cleaning Up the Output
+
+### RSpec.configure
+
+https://hexdocs.pm/ex_unit/1.10.4/ExUnit.html#configure/1-options
+
+#### Hooks
+
+#### Sharing Code Using Modules
+
+#### Filtering
+
+#### Metadata
+
+#### Output Options
+
+#### Library Configuration
+
+##### Mocks
+
+##### Expectations
+
+#### Other Useful Options
+
+##### Zero Monkey-Patching Mode
+
+##### Random Order
+
+##### Adding Your Own Settings
+
+### Your Turn
+
 
