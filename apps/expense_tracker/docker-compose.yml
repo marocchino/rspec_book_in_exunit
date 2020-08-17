@@ -1,0 +1,10 @@
+version: "3"
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: expense_tracker_dev
+    ports:
+      - "15432:5432"

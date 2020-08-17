@@ -20,7 +20,8 @@ config :expense_tracker, ExpenseTracker.Repo,
   database: "expense_tracker_dev",
   hostname: "localhost",
   show_sensitive_data_on_connection_error: true,
-  pool_size: 10
+  pool_size: 10,
+  port: 15432
 
 
 # ## SSL Support

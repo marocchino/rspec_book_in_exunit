@@ -14,5 +14,6 @@ config :expense_tracker, ExpenseTracker.Repo,
   password: "postgres",
   database: "expense_tracker_test#{System.get_env("MIX_TEST_PARTITION")}",
   hostname: "localhost",
-  pool: Ecto.Adapters.SQL.Sandbox
+  pool: Ecto.Adapters.SQL.Sandbox,
+  port: 15432
 
